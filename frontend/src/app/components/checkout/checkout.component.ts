@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { Product } from 'src/app/models/product';
 import { ProductService } from 'src/app/services/product.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { CartService } from '../cart/cart.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-checkout',
@@ -15,9 +17,11 @@ export class CheckoutComponent implements OnInit {
     product: Product,
     quantity: number
   }[] = [];
-  totalPrice!: number;
   cartProducts: Product[] = [];
-  finalProducts: {id: number, quantity: number}[] = []; 
+  finalProducts: { id: number, quantity: number }[] = [];
+
+  totalPrice: Observable<number> = this.cartService.cartTotal$;
+
 
   checkoutForm = new FormGroup({
     fname: new FormControl('', Validators.required),
@@ -32,30 +36,30 @@ export class CheckoutComponent implements OnInit {
     country: new FormControl('', Validators.required)
   });
 
-  constructor(private productService: ProductService, private router: Router) { }
+  constructor(private productService: ProductService, private router: Router, private readonly cartService: CartService) { }
 
   ngOnInit(): void {
-    this.productService.getCart().subscribe(
-      (cart) => {
-        this.products = cart.products;
-        this.products.forEach(
-          (element) => this.cartProducts.push(element.product)
-        );
-        this.totalPrice = cart.totalPrice;
-      }
-    );
+    // this.productService.getCart().subscribe(
+    //   (cart) => {
+    //     this.products = cart.products;
+    //     this.products.forEach(
+    //       (element) => this.cartProducts.push(element.product)
+    //     );
+    //     this.totalPrice = cart.totalPrice;
+    //   }
+    // );
   }
 
   onSubmit(): void {
     this.products.forEach(
       (element) => {
         const id = element.product.id;
-        const quantity = element.quantity
-        this.finalProducts.push({id, quantity})
-      } 
+        const quantity = element.quantity;
+        this.finalProducts.push({ id, quantity });
+      }
     );
 
-    if(this.finalProducts.length > 0) {
+    if (this.finalProducts.length > 0) {
       this.productService.purchase(this.finalProducts).subscribe(
         (resp) => console.log(resp),
         (err) => console.log(err),
@@ -67,7 +71,7 @@ export class CheckoutComponent implements OnInit {
           };
           this.productService.setCart(cart);
           this.router.navigate(['/home']);
-        } 
+        }
       );
 
     } else {

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Product } from 'src/app/models/product';
 import { ProductService } from 'src/app/services/product.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-display-products',
@@ -9,16 +10,18 @@ import { ProductService } from 'src/app/services/product.service';
 })
 export class DisplayProductsComponent implements OnInit {
 
-  allProducts: Product[] = [];
+  allProducts: Observable<Product[]> = this.productService.getProducts();
 
   constructor(private productService: ProductService) { }
 
   ngOnInit(): void {
-    this.productService.getProducts().subscribe(
-      (resp) => this.allProducts = resp,
-      (err) => console.log(err),
-      () => console.log("Products Retrieved")
-    );
+    // unnecessary to subscribe here.
+
+    // this.productService.getProducts().subscribe(
+    //   (resp) => this.allProducts = resp,
+    //   (err) => console.log(err),
+    //   () => console.log("Products Retrieved")
+    // );
   }
 
 }

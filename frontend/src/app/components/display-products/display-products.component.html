@@ -1,11 +1,13 @@
 <app-navbar></app-navbar>
 <div class="container">
-    <div class="row align-items-start">
-       <div class="col" *ngFor="let product of allProducts">
-            <app-product-card
-                class="cardListItem"
-                [productInfo]="product"
-            ></app-product-card> 
-        </div> 
+  <div class="row align-items-start">
+<!--It's best to subscribe to observables in the template as much as possible using the "| async" pipe.-->
+<!--It will auto unsubscribe when the component unmounts. This ensures that data streams don't leak-->
+    <div class="col" *ngFor="let product of allProducts | async">
+      <app-product-card
+        class="cardListItem"
+        [productInfo]="product"
+      ></app-product-card>
     </div>
+  </div>
 </div>
